@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11304.174 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{6B45AC25-54E7-432E-8D51-1FABE15002D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{C19FB65F-D7F9-4D38-998D-08B7E3E3FFAA}"
+	ProjectSection(SolutionItems) = preProject
+		WpfApp1\about.png = WpfApp1\about.png
+		WpfApp1\back.png = WpfApp1\back.png
+		WpfApp1\copy.png = WpfApp1\copy.png
+		WpfApp1\create.png = WpfApp1\create.png
+		WpfApp1\cut.png = WpfApp1\cut.png
+		WpfApp1\front.png = WpfApp1\front.png
+		WpfApp1\insert.png = WpfApp1\insert.png
+		WpfApp1\open.jpg = WpfApp1\open.jpg
+		WpfApp1\question.png = WpfApp1\question.png
+		WpfApp1\save.png = WpfApp1\save.png
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6B45AC25-54E7-432E-8D51-1FABE15002D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B45AC25-54E7-432E-8D51-1FABE15002D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B45AC25-54E7-432E-8D51-1FABE15002D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B45AC25-54E7-432E-8D51-1FABE15002D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3653B7B7-8268-40BC-A228-658A3172645B}
+	EndGlobalSection
+EndGlobal
