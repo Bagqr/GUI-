@@ -6,17 +6,26 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="GUI для языкового процессора" Height="381" Width="598">
-
-    <StackPanel>
-        <Menu Height="20" VerticalAlignment="Top">
-            <MenuItem Header="Файл" Click="MenuItem_Click">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Меню -->
+            <RowDefinition Height="Auto"/>
+            <!-- Тулбар -->
+            <RowDefinition Height="*"/>
+            <!-- Редактор (растягивается!) -->
+            <RowDefinition Height="Auto"/>
+            <!-- DataGrid -->
+        </Grid.RowDefinitions>
+        <Menu Grid.Row ="0" Height="20" VerticalAlignment="Top">
+            <MenuItem Header="Файл">
                 <MenuItem Header="Создать" ></MenuItem>
                 <MenuItem Header="Открыть" ></MenuItem>
                 <MenuItem Header="Сохранить" ></MenuItem>
                 <MenuItem Header="Сохранить как" ></MenuItem>
                 <MenuItem Header="Выход" ></MenuItem>
             </MenuItem>
-            <MenuItem Header="Правка" Click="MenuItem_Click">
+            <MenuItem Header="Правка">
                 <MenuItem Header="Отменить" ></MenuItem>
                 <MenuItem Header="Повторить" ></MenuItem>
                 <MenuItem Header="Вырезать" ></MenuItem>
@@ -25,7 +34,7 @@
                 <MenuItem Header="Удалить" ></MenuItem>
                 <MenuItem Header="Выделить всё" ></MenuItem>
             </MenuItem>
-            <MenuItem Header="Текст" Click="MenuItem_Click">
+            <MenuItem Header="Текст">
                 <MenuItem Header="Постановка задачи" ></MenuItem>
                 <MenuItem Header="Грамматика" ></MenuItem>
                 <MenuItem Header="Классификация грамматики" ></MenuItem>
@@ -34,14 +43,14 @@
                 <MenuItem Header="Список литературы" ></MenuItem>
                 <MenuItem Header="Исходный код программы" ></MenuItem>
             </MenuItem>
-            <MenuItem Header="Пуск" Click="MenuItem_Click">
+            <MenuItem Header="Пуск">
             </MenuItem>
-            <MenuItem Header="Справка" Click="MenuItem_Click">
+            <MenuItem Header="Справка">
                 <MenuItem Header="Вызов справки" ></MenuItem>
                 <MenuItem Header="О программе" ></MenuItem>
             </MenuItem>
         </Menu>
-        <ToolBarTray Background="White">
+        <ToolBarTray Grid.Row ="1" Background="White">
             <ToolBar Band="1" BandIndex="1">
                 <Button Name="create" Width="50" Height="50">
                     <Image Source="/resources/create.png"/>
@@ -73,11 +82,18 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <RichTextBox Width ="Auto" MinHeight="150" FontSize="18">
+        <RichTextBox  Grid.Row="2"  x:Name="richTextBox"   VerticalScrollBarVisibility="Auto">
+
+            <!--#region  Use for not given spacing in Rich_Text_Box-->
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </RichTextBox.Resources>
 
         </RichTextBox>
-        <DataGrid x:Name="phonesGrid" AutoGenerateColumns="False" HorizontalGridLinesBrush="DarkGray"
-    RowBackground="LightGray" AlternatingRowBackground="White">
+        <DataGrid x:Name="DataGrid1" Grid.Row ="3" AutoGenerateColumns="False" HorizontalGridLinesBrush="DarkGray"
+    RowBackground="LightGray" MinHeight="150" AlternatingRowBackground="White">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Файл" Binding="{Binding Path=Title}" Width="*" />
                 <DataGridHyperlinkColumn Header="Позиция" Binding="{Binding Path=Company}" Width="*" />
@@ -85,5 +101,5 @@
                 <DataGridTextColumn Header="Ошибка" Binding="{Binding Path=Price}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
-    </StackPanel>
+    </Grid>
 </Window>
