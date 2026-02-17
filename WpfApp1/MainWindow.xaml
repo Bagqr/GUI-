@@ -19,11 +19,11 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row ="0" Height="20" VerticalAlignment="Top">
             <MenuItem Header="Файл">
-                <MenuItem Header="Создать" ></MenuItem>
-                <MenuItem Header="Открыть" ></MenuItem>
+                <MenuItem Header="Создать" Click="new_file_Click"></MenuItem>
+                <MenuItem Header="Открыть" Click="open_file_Click"></MenuItem>
                 <MenuItem Header="Сохранить" Click="save_file_Click" ></MenuItem>
-                <MenuItem Header="Сохранить как" ></MenuItem>
-                <MenuItem Header="Выход" ></MenuItem>
+                <MenuItem Header="Сохранить как" Click="save_as_file_Click"></MenuItem>
+                <MenuItem Header="Выход" Click="exitApp_Click"></MenuItem>
             </MenuItem>
             <MenuItem Header="Правка">
                 <MenuItem Header="Отменить" ></MenuItem>
@@ -52,20 +52,20 @@
         </Menu>
         <ToolBarTray Grid.Row ="1" Background="White">
             <ToolBar Band="1" BandIndex="1">
-                <Button Name="create" Width="50" Height="50">
+                <Button Name="create" Width="50" Height="50" Click="new_file_Click">
                     <Image Source="/resources/create.png"/>
                 </Button>
-                <Button Name="open" Width="50" Height="50">
+                <Button Name="open" Width="50" Height="50" Click="open_file_Click">
                     <Image Source="/resources/open.png"></Image>
                 </Button>
-                <Button Name="save" Width="50" Height="50">
+                <Button Name="save" Width="50" Height="50" Click="save_file_Click">
                     <Image Source="/resources/save.png"></Image>
                 </Button>
                 <Separator/>
-                <Button Name="back" Width="50" Height="50">
+                <Button Name="back" Width="50" Height="50" Click="back_Click">
                     <Image Source="/resources/back.png"></Image>
                 </Button>
-                <Button Name="front" Width="50" Height="50">
+                <Button Name="front" Width="50" Height="50" Click="front_Click">
                     <Image Source="/resources/forward.png"></Image>
                 </Button>
                 <Button Name="copy" Width="50" Height="50">
