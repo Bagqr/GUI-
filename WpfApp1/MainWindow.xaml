@@ -21,7 +21,7 @@
             <MenuItem Header="Файл">
                 <MenuItem Header="Создать" ></MenuItem>
                 <MenuItem Header="Открыть" ></MenuItem>
-                <MenuItem Header="Сохранить" ></MenuItem>
+                <MenuItem Header="Сохранить" Click="save_file_Click" ></MenuItem>
                 <MenuItem Header="Сохранить как" ></MenuItem>
                 <MenuItem Header="Выход" ></MenuItem>
             </MenuItem>
@@ -84,7 +84,6 @@
         </ToolBarTray>
         <RichTextBox  Grid.Row="2"  x:Name="richTextBox"   VerticalScrollBarVisibility="Auto">
 
-            <!--#region  Use for not given spacing in Rich_Text_Box-->
             <RichTextBox.Resources>
                 <Style TargetType="{x:Type Paragraph}">
                     <Setter Property="Margin" Value="0"/>
