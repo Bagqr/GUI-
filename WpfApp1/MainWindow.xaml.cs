@@ -15,6 +15,8 @@ namespace WpfApp1
     public class EditorTab : INotifyPropertyChanged
     {
         private string _filePath;
+        public ICSharpCode.AvalonEdit.TextEditor Editor { get; set; }
+
         public string FilePath
         {
             get => _filePath;
@@ -95,17 +97,18 @@ namespace WpfApp1
             Tabs.Add(new EditorTab());
             SelectedTab = Tabs[0];
         }
-        private ICSharpCode.AvalonEdit.TextEditor CurrentEditor
-        {
-            get
-            {
-                if (SelectedTab == null) return null;
+        private ICSharpCode.AvalonEdit.TextEditor CurrentEditor => SelectedTab?.Editor;
 
-                var tabItem = tabControl.ItemContainerGenerator.ContainerFromItem(SelectedTab) as TabItem;
-                return tabItem != null ? FindVisualChild<ICSharpCode.AvalonEdit.TextEditor>(tabItem) : null;
+        private void DumpVisualTree(DependencyObject obj, int level)
+        {
+            if (obj == null) return;
+            string indent = new string(' ', level * 2);
+            System.Diagnostics.Debug.WriteLine($"{indent}{obj.GetType().Name}");
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DumpVisualTree(VisualTreeHelper.GetChild(obj, i), level + 1);
             }
         }
-
         private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
@@ -222,9 +225,19 @@ namespace WpfApp1
 
         private void selectAll_Click(object sender, RoutedEventArgs e)
         {
-            CurrentEditor?.SelectAll();
+
+            var editor = CurrentEditor;
+            editor?.SelectAll();
         }
 
+        private void TextEditor_Loaded(object sender, RoutedEventArgs e)
+        {
+            var editor = sender as ICSharpCode.AvalonEdit.TextEditor;
+            if (editor?.DataContext is EditorTab tab)
+            {
+                tab.Editor = editor; 
+            }
+        }
         private void about_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("в разработке. метод about_Click");
@@ -233,6 +246,88 @@ namespace WpfApp1
         private void questions_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("в разработке. метод questions_Click");
+        }
+
+        private void SetFontSize_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            if (menuItem?.Tag is string sizeStr && double.TryParse(sizeStr, out double size))
+            {
+                foreach (var tab in Tabs)
+                {
+                    if (tab.Editor != null)
+                        tab.Editor.FontSize = size;
+                }
+
+                foreach (var item in ((MenuItem)menuItem.Parent).Items)
+                {
+                    if (item is MenuItem mi)
+                        mi.IsChecked = false;
+                }
+                menuItem.IsChecked = true;
+            }
+        }
+        private void SetCustomFontSize_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Window
+            {
+                Title = "Размер шрифта",
+                Width = 300,
+                Height = 150,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = this,
+                WindowStyle = WindowStyle.ToolWindow,
+                ResizeMode = ResizeMode.NoResize
+            };
+
+            var panel = new StackPanel { Margin = new Thickness(10) };
+            panel.Children.Add(new TextBlock { Text = "Введите размер (6-48):", Margin = new Thickness(0, 0, 0, 5) });
+
+            var textBox = new TextBox { Text = CurrentEditor?.FontSize.ToString() ?? "12" };
+            textBox.SelectAll();
+            panel.Children.Add(textBox);
+
+            var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 10, 0, 0) };
+            var okBtn = new Button { Content = "OK", Width = 60, Height = 22, Margin = new Thickness(0, 0, 5, 0), IsDefault = true };
+            var cancelBtn = new Button { Content = "Отмена", Width = 60, Height = 22, IsCancel = true };
+
+            btnPanel.Children.Add(okBtn);
+            btnPanel.Children.Add(cancelBtn);
+            panel.Children.Add(btnPanel);
+            dialog.Content = panel;
+
+            okBtn.Click += (s, args) =>
+            {
+                if (double.TryParse(textBox.Text, out double size))
+                {
+                    size = Math.Max(6, Math.Min(48, size));
+                    foreach (var tab in Tabs)
+                        if (tab.Editor != null)
+                            tab.Editor.FontSize = size;
+
+                    if (mainMenu.Items[2] is MenuItem textMenu &&
+                        textMenu.Items[7] is MenuItem fontSizeMenu)
+                    {
+                        foreach (var menuItem in fontSizeMenu.Items)
+                        {
+                            if (menuItem is MenuItem mi && mi.Header.ToString() != "Другой...")
+                            {
+                                mi.IsChecked = false;
+                            }
+                        }
+                    }
+
+                    dialog.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Введите число!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    textBox.Focus();
+                    textBox.SelectAll();
+                }
+            };
+
+            dialog.ShowDialog();
         }
     }
 }

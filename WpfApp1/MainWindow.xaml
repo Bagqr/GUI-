@@ -14,16 +14,12 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Меню -->
             <RowDefinition Height="Auto"/>
-            <!-- Тулбар -->
             <RowDefinition Height="*"/>
-            <!-- Вкладки с редактором -->
             <RowDefinition Height="Auto"/>
-            <!-- DataGrid -->
         </Grid.RowDefinitions>
 
-        <Menu Height="20" VerticalAlignment="Center" Grid.ColumnSpan="2">
+        <Menu Name="mainMenu" Height="20" VerticalAlignment="Center" Grid.ColumnSpan="2">
             <MenuItem Header="Файл">
                 <MenuItem Header="Создать" Click="new_file_Click"/>
                 <MenuItem Header="Открыть" Click="open_file_Click"/>
@@ -48,6 +44,16 @@
                 <MenuItem Header="Тестовый пример"/>
                 <MenuItem Header="Список литературы"/>
                 <MenuItem Header="Исходный код программы"/>
+                <MenuItem Header="Размер шрифта">
+                    <MenuItem Header="8pt" Click="SetFontSize_Click" Tag="8"/>
+                    <MenuItem Header="10pt" Click="SetFontSize_Click" Tag="10"/>
+                    <MenuItem Header="12pt" Click="SetFontSize_Click" Tag="12" IsChecked="True"/>
+                    <MenuItem Header="14pt" Click="SetFontSize_Click" Tag="14"/>
+                    <MenuItem Header="16pt" Click="SetFontSize_Click" Tag="16"/>
+                    <MenuItem Header="18pt" Click="SetFontSize_Click" Tag="18"/>
+                    <Separator/>
+                    <MenuItem Header="Другой..." Click="SetCustomFontSize_Click"/>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Пуск"/>
             <MenuItem Header="Справка">
@@ -96,10 +102,11 @@
                 <DataTemplate>
                     <DockPanel>
                         <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"/>
-                        <Button Content="X" 
+                        <Button Content="" 
+                                Background="Red"
                                 DockPanel.Dock="Right" 
-                                Margin="5,0,0,0"
-                                Width="16" Height="16"
+                                Margin="5,0,5,0"
+                                Width="5" Height="5"
                                 Command="{Binding CloseCommand}"/>
                     </DockPanel>
                 </DataTemplate>
@@ -114,7 +121,8 @@
                         FontSize="12"
                         ShowLineNumbers="True"
                         LineNumbersForeground="Gray"
-                        HorizontalScrollBarVisibility="Auto"/>
+                        HorizontalScrollBarVisibility="Auto"
+                        Loaded="TextEditor_Loaded"/>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
