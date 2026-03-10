@@ -9,8 +9,9 @@
         Title="GUI для языкового процессора" Height="381" Width="598">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="289*"/>
-            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="217*"/>
+            <ColumnDefinition Width="361*"/>
+            <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,7 +20,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Menu Name="mainMenu" Height="20" VerticalAlignment="Center" Grid.ColumnSpan="2">
+        <Menu Name="mainMenu" Height="20" VerticalAlignment="Center" Grid.ColumnSpan="3">
             <MenuItem Header="Файл">
                 <MenuItem Header="Создать" Click="new_file_Click"/>
                 <MenuItem Header="Открыть" Click="open_file_Click"/>
@@ -28,8 +29,8 @@
                 <MenuItem Header="Выход" Click="exitApp_Click"/>
             </MenuItem>
             <MenuItem Header="Правка">
-                <MenuItem Header="Отменить" Click="back_Click"/>
-                <MenuItem Header="Повторить" Click="front_Click"/>
+                <MenuItem Header="Назад" Click="back_Click"/>
+                <MenuItem Header="Заново" Click="front_Click"/>
                 <MenuItem Header="Вырезать" Click="cut_Click"/>
                 <MenuItem Header="Копировать" Click="copy_Click"/>
                 <MenuItem Header="Вставить" Click="paste_Click"/>
@@ -59,10 +60,16 @@
             <MenuItem Header="Справка">
                 <MenuItem Header="Вызов справки" Click="questions_Click"/>
                 <MenuItem Header="О программе" Click="about_Click"/>
+                <Separator/>
+                <MenuItem Header="Язык">
+                    <MenuItem Header="Русский" Click="SetRussian_Click" IsCheckable="True"/>
+                    <MenuItem Header="English" Click="SetEnglish_Click" IsCheckable="True"/>
+                    <MenuItem Header="Монгол хэл" Click="SetMongolian_Click" IsCheckable="True"/>
+                </MenuItem>
             </MenuItem>
         </Menu>
 
-        <ToolBarTray Grid.Row="1" Background="White" Grid.ColumnSpan="2">
+        <ToolBarTray Grid.Row="1" Background="White" Grid.ColumnSpan="3">
             <ToolBar Band="1" BandIndex="1">
                 <Button Name="create" Width="50" Height="50" Click="new_file_Click">
                     <Image Source="/resources/create.png"/>
@@ -95,7 +102,7 @@
             </ToolBar>
         </ToolBarTray>
 
-        <TabControl x:Name="tabControl" Grid.Row="2" Grid.ColumnSpan="2"
+        <TabControl x:Name="tabControl" Grid.Row="2" Grid.ColumnSpan="3"
                     ItemsSource="{Binding Tabs, RelativeSource={RelativeSource AncestorType=Window}}"
                     SelectedItem="{Binding SelectedTab, RelativeSource={RelativeSource AncestorType=Window}}">
             <TabControl.ItemTemplate>
@@ -127,10 +134,10 @@
             </TabControl.ContentTemplate>
         </TabControl>
 
-        <DataGrid x:Name="DataGrid1" Grid.Row="3" Grid.ColumnSpan="2" 
+        <DataGrid x:Name="DataGrid1" Grid.Row="3" Grid.ColumnSpan="3" 
                   AutoGenerateColumns="False" HorizontalGridLinesBrush="DarkGray"
                   RowBackground="LightGray" AlternatingRowBackground="White" 
-                  Height="150" VerticalAlignment="Bottom">
+                  Height="150" VerticalAlignment="Center">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Файл" Binding="{Binding Path=Title}" Width="*"/>
                 <DataGridHyperlinkColumn Header="Позиция" Binding="{Binding Path=Company}" Width="*"/>

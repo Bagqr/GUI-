@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit.Document;
+using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -6,8 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Document;
-using Microsoft.Win32;
 using MessageBox = System.Windows.MessageBox;
 
 namespace WpfApp1
@@ -77,6 +78,7 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         public ObservableCollection<EditorTab> Tabs { get; } = new ObservableCollection<EditorTab>();
+        private Dictionary<MenuItem, string> _originalHeaders = new Dictionary<MenuItem, string>();
 
         private EditorTab _selectedTab;
         public EditorTab SelectedTab
@@ -96,6 +98,38 @@ namespace WpfApp1
 
             Tabs.Add(new EditorTab());
             SelectedTab = Tabs[0];
+
+            SaveOriginalHeaders();
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("ru-RU");
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("ru-RU");
+            UpdateUI();
+
+            SetDefaultLanguageCheck();
+        }
+
+        private void SetDefaultLanguageCheck()
+        {
+            foreach (var mainItem in mainMenu.Items)
+            {
+                if (mainItem is MenuItem menuItem && menuItem.Header.ToString() == "Справка")
+                {
+                    foreach (var subItem in menuItem.Items)
+                    {
+                        if (subItem is MenuItem langMenu && langMenu.Header.ToString() == "Язык")
+                        {
+                            foreach (var langItem in langMenu.Items)
+                            {
+                                if (langItem is MenuItem mi && mi.Header.ToString() == "Русский")
+                                {
+                                    mi.IsChecked = true;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         private ICSharpCode.AvalonEdit.TextEditor CurrentEditor => SelectedTab?.Editor;
 
@@ -271,7 +305,7 @@ namespace WpfApp1
         {
             var dialog = new Window
             {
-                Title = "Размер шрифта",
+                Title = resources.Language.FontSize,
                 Width = 300,
                 Height = 150,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -281,15 +315,15 @@ namespace WpfApp1
             };
 
             var panel = new StackPanel { Margin = new Thickness(10) };
-            panel.Children.Add(new TextBlock { Text = "Введите размер (6-48):", Margin = new Thickness(0, 0, 0, 5) });
+            panel.Children.Add(new TextBlock { Text = resources.Language.EnterSize, Margin = new Thickness(0, 0, 0, 5) });
 
             var textBox = new TextBox { Text = CurrentEditor?.FontSize.ToString() ?? "12" };
             textBox.SelectAll();
             panel.Children.Add(textBox);
 
             var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 10, 0, 0) };
-            var okBtn = new Button { Content = "OK", Width = 60, Height = 22, Margin = new Thickness(0, 0, 5, 0), IsDefault = true };
-            var cancelBtn = new Button { Content = "Отмена", Width = 60, Height = 22, IsCancel = true };
+            var okBtn = new Button { Content = resources.Language.OK, Width = 60, Height = 22, Margin = new Thickness(0, 0, 5, 0), IsDefault = true };
+            var cancelBtn = new Button { Content = resources.Language.Cancel, Width = 60, Height = 22, IsCancel = true };
 
             btnPanel.Children.Add(okBtn);
             btnPanel.Children.Add(cancelBtn);
@@ -310,7 +344,7 @@ namespace WpfApp1
                     {
                         foreach (var menuItem in fontSizeMenu.Items)
                         {
-                            if (menuItem is MenuItem mi && mi.Header.ToString() != "Другой...")
+                            if (menuItem is MenuItem mi && mi.Header.ToString() != resources.Language.Other)
                             {
                                 mi.IsChecked = false;
                             }
@@ -321,13 +355,195 @@ namespace WpfApp1
                 }
                 else
                 {
-                    MessageBox.Show("Введите число!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(resources.Language.ErrorInvalidNumber, resources.Language.FontSizeTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     textBox.Focus();
                     textBox.SelectAll();
                 }
             };
 
             dialog.ShowDialog();
+        }
+        private void SetRussian_Click(object sender, RoutedEventArgs e)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("ru-RU");
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("ru-RU");
+
+            UpdateUI();
+
+            ((MenuItem)sender).IsChecked = true;
+            foreach (var item in ((MenuItem)((MenuItem)sender).Parent).Items)
+            {
+                if (item is MenuItem mi && mi != sender)
+                    mi.IsChecked = false;
+            }
+        }
+
+        private void SetEnglish_Click(object sender, RoutedEventArgs e)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+
+            UpdateUI();
+
+            ((MenuItem)sender).IsChecked = true;
+            foreach (var item in ((MenuItem)((MenuItem)sender).Parent).Items)
+            {
+                if (item is MenuItem mi && mi != sender)
+                    mi.IsChecked = false;
+            }
+        }
+        private void SetMongolian_Click(object sender, RoutedEventArgs e)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("mn-MN");
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("mn-MN");
+
+            UpdateUI();
+
+            ((MenuItem)sender).IsChecked = true;
+            foreach (var item in ((MenuItem)((MenuItem)sender).Parent).Items)
+            {
+                if (item is MenuItem mi && mi != sender)
+                    mi.IsChecked = false;
+            }
+        }
+        private void UpdateUI()
+        {
+            this.Title = resources.Language.WindowTitle;
+
+            UpdateMenuItems(mainMenu);
+
+            UpdateDataGridColumns();
+
+            UpdateToolTips();
+        }
+        private void UpdateDataGridColumns()
+        {
+            if (DataGrid1 == null || DataGrid1.Columns.Count < 4)
+                return;
+
+            DataGrid1.Columns[0].Header = resources.Language.File;       
+            DataGrid1.Columns[1].Header = resources.Language.Position;  
+            DataGrid1.Columns[2].Header = resources.Language.Code;      
+            DataGrid1.Columns[3].Header = resources.Language.Error;     
+        }
+        private void UpdateToolTips()
+        {
+            create.ToolTip = resources.Language.New;
+            open.ToolTip = resources.Language.Open;
+            save.ToolTip = resources.Language.Save;
+            back.ToolTip = resources.Language.Undo;
+            front.ToolTip = resources.Language.Redo;
+            copy.ToolTip = resources.Language.Copy;
+            paste.ToolTip = resources.Language.Paste;
+            question.ToolTip = resources.Language.HelpContent;
+            about.ToolTip = resources.Language.About;
+        }
+        
+        private void UpdateMenuItems(ItemsControl itemsControl)
+        {
+            foreach (var item in itemsControl.Items)
+            {
+                if (item is MenuItem menuItem)
+                {
+                    if (_originalHeaders.TryGetValue(menuItem, out string originalHeader))
+                    {
+                        string translated = GetTranslation(originalHeader);
+
+                        if (menuItem.Header.ToString() != translated)
+                        {
+                            menuItem.Header = translated;
+                            System.Diagnostics.Debug.WriteLine($"Переведено: {originalHeader} -> {translated}");
+                        }
+                    }
+                    else
+                    {
+                        _originalHeaders[menuItem] = menuItem.Header.ToString();
+                        System.Diagnostics.Debug.WriteLine($"Экстренно сохранён: {menuItem.Header}");
+                    }
+
+                    if (menuItem.Items.Count > 0)
+                        UpdateMenuItems(menuItem);
+                }
+            }
+        }
+        private void SaveOriginalHeaders()
+        {
+            SaveOriginalHeadersRecursive(mainMenu);
+        }
+
+        private void SaveOriginalHeadersRecursive(ItemsControl itemsControl)
+        {
+            foreach (var item in itemsControl.Items)
+            {
+                if (item is MenuItem menuItem)
+                {
+                    if (!_originalHeaders.ContainsKey(menuItem))
+                    {
+                        _originalHeaders[menuItem] = menuItem.Header.ToString();
+                        System.Diagnostics.Debug.WriteLine($"Сохранён оригинал: {menuItem.Header}");
+                    }
+
+                    if (menuItem.Items.Count > 0)
+                        SaveOriginalHeadersRecursive(menuItem);
+                }
+            }
+        }
+        private string GetTranslation(string russianText)
+        {
+            var translationMap = new Dictionary<string, string>
+    {
+        {"Файл", "File"},
+        {"Правка", "Edit"},
+        {"Текст", "Text"},
+        {"Пуск", "Start"},
+        {"Справка", "Help"},
+        
+        {"Новый файл", "New"},
+        {"Создать", "New"},
+        {"Открыть", "Open"},
+        {"Сохранить", "Save"},
+        {"Сохранить как", "SaveAs"},
+        {"Выход", "Exit"},
+        
+        {"Назад", "Undo"},
+        {"Заново", "Redo"},
+        {"Вырезать", "Cut"},
+        {"Копировать", "Copy"},
+        {"Вставить", "Paste"},
+        {"Удалить", "Delete"},
+        {"Выделить всё", "SelectAll"},
+        
+        {"Постановка задачи", "TaskStatement"},
+        {"Грамматика", "Grammar"},
+        {"Классификация грамматики", "GrammarClassification"},
+        {"Метод анализа", "AnalysisMethod"},
+        {"Тестовый пример", "TestExample"},
+        {"Список литературы", "References"},
+        {"Исходный код программы", "SourceCode"},
+        {"Размер шрифта", "FontSize"},
+
+        {"Другой...", "Other"},
+        
+        {"Вызов справки", "HelpContent"},
+        {"О программе", "About"},
+        {"Язык", "MenuLanguage"},
+        {"Русский", "Russian"},
+        {"English", "English"},
+        {"Монгольский", "Mongolian"},
+        
+        {"Позиция", "Position"},
+        {"Код", "Code"},
+        {"Ошибка", "Error"},
+    };
+
+            if (translationMap.ContainsKey(russianText))
+            {
+                var resource = resources.Language.ResourceManager.GetString(translationMap[russianText]);
+                return resource ?? russianText;
+            }
+
+            return russianText;
         }
     }
 }
