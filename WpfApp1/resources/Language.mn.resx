@@ -120,8 +120,16 @@
   <data name="About" xml:space="preserve">
     <value>Хөтөлбөрийн тухай</value>
   </data>
+  <data name="AboutText" xml:space="preserve">
+    <value>Хэл боловсруулагчийн текст засварлагч
+Хувилбар 1.0
+@Авдюков Б.А.</value>
+  </data>
   <data name="AnalysisMethod" xml:space="preserve">
     <value>Шинжилгээний арга</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>Хэлний процессор</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Цуцлах</value>
@@ -130,13 +138,13 @@
     <value>Код</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Хуулбар</value>
+    <value>Хуулбар (Ctrl+C)</value>
   </data>
   <data name="Cut" xml:space="preserve">
-    <value>Тайрах</value>
+    <value>Тайрах (Ctrl+X)</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Устгах</value>
+    <value>Устгах (Del)</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Засварлах</value>
@@ -169,7 +177,16 @@
     <value>Тусламж</value>
   </data>
   <data name="HelpContent" xml:space="preserve">
-    <value>Тусламж</value>
+    <value>Тусламж Дуудах</value>
+  </data>
+  <data name="HelpMainTitle" xml:space="preserve">
+    <value>Хэрэгжүүлсэн чиг үүрэг</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>Лавлагаа</value>
+  </data>
+  <data name="Interface" xml:space="preserve">
+    <value>Интерфэйс</value>
   </data>
   <data name="MenuLanguage" xml:space="preserve">
     <value>Хэл</value>
@@ -187,13 +204,13 @@
     <value>Бусад...</value>
   </data>
   <data name="Paste" xml:space="preserve">
-    <value>Оо</value>
+    <value>Оо (Ctrl+V)</value>
   </data>
   <data name="Position" xml:space="preserve">
     <value>Байрлал</value>
   </data>
   <data name="Redo" xml:space="preserve">
-    <value>Дахин</value>
+    <value>Дахин (Ctrl+Y)</value>
   </data>
   <data name="References" xml:space="preserve">
     <value>Уран зохиолын жагсаалт</value>
@@ -205,13 +222,40 @@
     <value>Байдлаар хадгална</value>
   </data>
   <data name="SelectAll" xml:space="preserve">
-    <value>Бүгдийг сонгоно уу</value>
+    <value>Бүгдийг сонгоно уу (Ctrl+A)</value>
   </data>
   <data name="SourceCode" xml:space="preserve">
     <value>Хөтөлбөрийн эх код</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Эхлэхийн тулд</value>
+  </data>
+  <data name="StatusChars" xml:space="preserve">
+    <value>Тэмдэгтүүд</value>
+  </data>
+  <data name="StatusColumn" xml:space="preserve">
+    <value>Багана</value>
+  </data>
+  <data name="StatusFile" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="StatusFontSize" xml:space="preserve">
+    <value>Үсгийн Хэмжээ</value>
+  </data>
+  <data name="StatusLine" xml:space="preserve">
+    <value>Шугам</value>
+  </data>
+  <data name="StatusLines" xml:space="preserve">
+    <value>Шугамууд</value>
+  </data>
+  <data name="StatusNewDocument" xml:space="preserve">
+    <value>Шинэ баримт бичиг</value>
+  </data>
+  <data name="StatusNoFile" xml:space="preserve">
+    <value>Нээлттэй файл байхгүй байна</value>
+  </data>
+  <data name="StatusReady" xml:space="preserve">
+    <value>Хийсэн</value>
   </data>
   <data name="TaskStatement" xml:space="preserve">
     <value>Даалгаврыг тогтоох</value>
@@ -223,7 +267,7 @@
     <value>Текст</value>
   </data>
   <data name="Undo" xml:space="preserve">
-    <value>Буцах</value>
+    <value>Буцах (Ctrl+Z)</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>Хэлний процессор нь GUI</value>

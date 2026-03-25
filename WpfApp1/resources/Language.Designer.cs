@@ -70,11 +70,31 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Text editor for language processor
+        ///Version 1.0
+        ///@Avdiukov B.A..
+        /// </summary>
+        internal static string AboutText {
+            get {
+                return ResourceManager.GetString("AboutText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Analysis method.
         /// </summary>
         internal static string AnalysisMethod {
             get {
                 return ResourceManager.GetString("AnalysisMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Language processor.
+        /// </summary>
+        internal static string AppName {
+            get {
+                return ResourceManager.GetString("AppName", resourceCulture);
             }
         }
         
@@ -97,7 +117,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Copy.
+        ///   Ищет локализованную строку, похожую на Copy (Ctrl+C).
         /// </summary>
         internal static string Copy {
             get {
@@ -106,7 +126,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Cut.
+        ///   Ищет локализованную строку, похожую на Cut (Ctrl+X).
         /// </summary>
         internal static string Cut {
             get {
@@ -115,7 +135,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Delete.
+        ///   Ищет локализованную строку, похожую на Delete (Del).
         /// </summary>
         internal static string Delete {
             get {
@@ -187,15 +207,6 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на .
-        /// </summary>
-        internal static string FontSizeTitle {
-            get {
-                return ResourceManager.GetString("FontSizeTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Grammar.
         /// </summary>
         internal static string Grammar {
@@ -223,11 +234,38 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Help.
+        ///   Ищет локализованную строку, похожую на Calling Help.
         /// </summary>
         internal static string HelpContent {
             get {
                 return ResourceManager.GetString("HelpContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Implemented functions.
+        /// </summary>
+        internal static string HelpMainTitle {
+            get {
+                return ResourceManager.GetString("HelpMainTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Help.
+        /// </summary>
+        internal static string HelpTitle {
+            get {
+                return ResourceManager.GetString("HelpTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Interface.
+        /// </summary>
+        internal static string Interface {
+            get {
+                return ResourceManager.GetString("Interface", resourceCulture);
             }
         }
         
@@ -277,7 +315,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Paste.
+        ///   Ищет локализованную строку, похожую на Paste (Ctrl+V).
         /// </summary>
         internal static string Paste {
             get {
@@ -295,7 +333,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Redo.
+        ///   Ищет локализованную строку, похожую на Redo (Ctrl+Y).
         /// </summary>
         internal static string Redo {
             get {
@@ -331,7 +369,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Select All.
+        ///   Ищет локализованную строку, похожую на Select All (Ctrl+A).
         /// </summary>
         internal static string SelectAll {
             get {
@@ -354,6 +392,87 @@ namespace WpfApp1.resources {
         internal static string Start {
             get {
                 return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chars.
+        /// </summary>
+        internal static string StatusChars {
+            get {
+                return ResourceManager.GetString("StatusChars", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Col.
+        /// </summary>
+        internal static string StatusColumn {
+            get {
+                return ResourceManager.GetString("StatusColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на File.
+        /// </summary>
+        internal static string StatusFile {
+            get {
+                return ResourceManager.GetString("StatusFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Font size.
+        /// </summary>
+        internal static string StatusFontSize {
+            get {
+                return ResourceManager.GetString("StatusFontSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Line.
+        /// </summary>
+        internal static string StatusLine {
+            get {
+                return ResourceManager.GetString("StatusLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Lines.
+        /// </summary>
+        internal static string StatusLines {
+            get {
+                return ResourceManager.GetString("StatusLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на New document.
+        /// </summary>
+        internal static string StatusNewDocument {
+            get {
+                return ResourceManager.GetString("StatusNewDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на No file opened.
+        /// </summary>
+        internal static string StatusNoFile {
+            get {
+                return ResourceManager.GetString("StatusNoFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ready.
+        /// </summary>
+        internal static string StatusReady {
+            get {
+                return ResourceManager.GetString("StatusReady", resourceCulture);
             }
         }
         
@@ -385,7 +504,7 @@ namespace WpfApp1.resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Undo.
+        ///   Ищет локализованную строку, похожую на Undo (Ctrl+Z).
         /// </summary>
         internal static string Undo {
             get {

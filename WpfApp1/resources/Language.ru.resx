@@ -120,8 +120,16 @@
   <data name="About" xml:space="preserve">
     <value>О программе</value>
   </data>
+  <data name="AboutText" xml:space="preserve">
+    <value>Текстовый редактор для языкового процессора
+Версия 1.0
+@Авдюков Б.А.</value>
+  </data>
   <data name="AnalysisMethod" xml:space="preserve">
     <value>Метод анализа</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>Языковой процессор</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Отмена</value>
@@ -130,13 +138,13 @@
     <value>Код</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Копировать</value>
+    <value>Копировать (Ctrl+C)</value>
   </data>
   <data name="Cut" xml:space="preserve">
-    <value>Вырезать</value>
+    <value>Вырезать (Ctrl+X)</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Удалить</value>
+    <value>Удалить (Del)</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Редактировать</value>
@@ -169,13 +177,22 @@
     <value>Помощь</value>
   </data>
   <data name="HelpContent" xml:space="preserve">
-    <value>Помощь</value>
+    <value>Вызов справки</value>
+  </data>
+  <data name="HelpMainTitle" xml:space="preserve">
+    <value>Реализованные функции</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>Справка</value>
+  </data>
+  <data name="Interface" xml:space="preserve">
+    <value>Интерфейс</value>
   </data>
   <data name="MenuLanguage" xml:space="preserve">
     <value>Язык</value>
   </data>
   <data name="New" xml:space="preserve">
-    <value>Новый файл</value>
+    <value>Создать</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>ОК</value>
@@ -187,13 +204,13 @@
     <value>Другой...</value>
   </data>
   <data name="Paste" xml:space="preserve">
-    <value>Вставить</value>
+    <value>Вставить (Ctrl+V)</value>
   </data>
   <data name="Position" xml:space="preserve">
     <value>Позиция</value>
   </data>
   <data name="Redo" xml:space="preserve">
-    <value>Заново</value>
+    <value>Заново (Ctrl+Y)</value>
   </data>
   <data name="References" xml:space="preserve">
     <value>Список литературы</value>
@@ -205,13 +222,40 @@
     <value>Сохранить как</value>
   </data>
   <data name="SelectAll" xml:space="preserve">
-    <value>Выделить всё</value>
+    <value>Выделить всё (Ctrl+A)</value>
   </data>
   <data name="SourceCode" xml:space="preserve">
     <value>Исходный код программы</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Начать</value>
+  </data>
+  <data name="StatusChars" xml:space="preserve">
+    <value>Символов</value>
+  </data>
+  <data name="StatusColumn" xml:space="preserve">
+    <value>Стб</value>
+  </data>
+  <data name="StatusFile" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="StatusFontSize" xml:space="preserve">
+    <value>Размер шрифта</value>
+  </data>
+  <data name="StatusLine" xml:space="preserve">
+    <value>Стр</value>
+  </data>
+  <data name="StatusLines" xml:space="preserve">
+    <value>Строк</value>
+  </data>
+  <data name="StatusNewDocument" xml:space="preserve">
+    <value>Новый документ</value>
+  </data>
+  <data name="StatusNoFile" xml:space="preserve">
+    <value>Нет открытого файла</value>
+  </data>
+  <data name="StatusReady" xml:space="preserve">
+    <value>Готово</value>
   </data>
   <data name="TaskStatement" xml:space="preserve">
     <value>Постановка задачи</value>
@@ -223,7 +267,7 @@
     <value>Текст</value>
   </data>
   <data name="Undo" xml:space="preserve">
-    <value>Назад</value>
+    <value>Назад (Ctrl+Z)</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>GUI для языкового процессора</value>

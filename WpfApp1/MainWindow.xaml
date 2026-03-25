@@ -6,7 +6,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="GUI для языкового процессора" Height="381" Width="598">
+        Title="GUI для языкового процессора" Height="381" Width="598"
+        AllowDrop="True"
+        PreviewDragOver="Window_PreviewDragOver"
+        Drop="Window_Drop">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="217*"/>
@@ -17,6 +20,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -102,9 +106,11 @@
             </ToolBar>
         </ToolBarTray>
 
-        <TabControl x:Name="tabControl" Grid.Row="2" Grid.ColumnSpan="3"
+        <TabControl x:Name="tabControl" Grid.Row="2" Grid.ColumnSpan="3" 
                     ItemsSource="{Binding Tabs, RelativeSource={RelativeSource AncestorType=Window}}"
-                    SelectedItem="{Binding SelectedTab, RelativeSource={RelativeSource AncestorType=Window}}">
+                    SelectedItem="{Binding SelectedTab, RelativeSource={RelativeSource AncestorType=Window}}"
+                    SelectionChanged="TabControl_SelectionChanged"
+                    VirtualizingStackPanel.IsVirtualizing="False">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
@@ -145,5 +151,23 @@
                 <DataGridTextColumn Header="Ошибка" Binding="{Binding Path=Price}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
+        <StatusBar Grid.Row="4" Grid.ColumnSpan="2" Background="LightGray" 
+           Padding="5,2" VerticalAlignment="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="statusText" Text="Готово" />
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock x:Name="cursorPosition" Text="Стр: 1  Стб: 1" />
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock x:Name="fileInfo" Text="Символов: 0" />
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock x:Name="fontSizeStatus" Text="Размер: 12pt" />
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

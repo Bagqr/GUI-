@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 
 namespace WpfApp1
@@ -77,6 +78,8 @@ namespace WpfApp1
 
     public partial class MainWindow : Window
     {
+        private static double _currentFontSize = 12;
+
         public ObservableCollection<EditorTab> Tabs { get; } = new ObservableCollection<EditorTab>();
         private Dictionary<MenuItem, string> _originalHeaders = new Dictionary<MenuItem, string>();
 
@@ -93,7 +96,6 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-
             this.DataContext = this;
 
             Tabs.Add(new EditorTab());
@@ -106,8 +108,57 @@ namespace WpfApp1
             UpdateUI();
 
             SetDefaultLanguageCheck();
+
+            if (DataGrid1 != null)
+                DataGrid1.FontSize = _currentFontSize;
+
+            UpdateStatusBar();
+        }
+        private void Window_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Copy;
+            e.Handled = true;
         }
 
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (string filePath in files)
+                {
+                    if (File.Exists(filePath))
+                    {
+                        OpenFileInNewTab(filePath);
+                    }
+                }
+            }
+        }
+        private void OpenFileInNewTab(string filePath)
+        {
+            try
+            {
+                foreach (var tab in Tabs)
+                {
+                    if (tab.FilePath == filePath)
+                    {
+                        SelectedTab = tab;
+                        return; 
+                    }
+                }
+
+                var newTab = new EditorTab { FilePath = filePath };
+                newTab.Document.Text = File.ReadAllText(filePath);
+                Tabs.Add(newTab);
+                SelectedTab = newTab;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии файла: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         private void SetDefaultLanguageCheck()
         {
             foreach (var mainItem in mainMenu.Items)
@@ -164,14 +215,15 @@ namespace WpfApp1
                 {
                     Tabs.Add(new EditorTab());
                 }
+                UpdateStatusBar();
             }
         }
-
 
         private void new_file_Click(object sender, RoutedEventArgs e)
         {
             Tabs.Add(new EditorTab());
             SelectedTab = Tabs[Tabs.Count - 1];
+            UpdateStatusBar(); 
         }
 
         private void open_file_Click(object sender, RoutedEventArgs e)
@@ -218,6 +270,7 @@ namespace WpfApp1
             {
                 File.WriteAllText(sfd.FileName, SelectedTab.Document.Text);
                 SelectedTab.FilePath = sfd.FileName;
+                UpdateStatusBar();   
             }
         }
 
@@ -264,48 +317,70 @@ namespace WpfApp1
             editor?.SelectAll();
         }
 
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateStatusBar();
+        }
+
         private void TextEditor_Loaded(object sender, RoutedEventArgs e)
         {
             var editor = sender as ICSharpCode.AvalonEdit.TextEditor;
             if (editor?.DataContext is EditorTab tab)
             {
-                tab.Editor = editor; 
+                tab.Editor = editor;
+                editor.FontSize = _currentFontSize;  
+                editor.TextArea.Caret.PositionChanged += (s, args) => UpdateStatusBar();
+                editor.Document.TextChanged += (s, args) => UpdateStatusBar();
+                UpdateStatusBar();                 
             }
         }
         private void about_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("в разработке. метод about_Click");
+            var aboutWindow = new AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
         }
 
         private void questions_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("в разработке. метод questions_Click");
+            var helpWindow = new HelpWindow();
+            helpWindow.Owner = this;
+            helpWindow.ShowDialog();
         }
-
         private void SetFontSize_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
             if (menuItem?.Tag is string sizeStr && double.TryParse(sizeStr, out double size))
             {
                 foreach (var tab in Tabs)
-                {
                     if (tab.Editor != null)
                         tab.Editor.FontSize = size;
+
+                if (DataGrid1 != null)
+                    DataGrid1.FontSize = size;
+
+                var parent = menuItem.Parent as MenuItem;
+                if (parent != null)
+                {
+                    foreach (var item in parent.Items)
+                    {
+                        if (item is MenuItem mi)
+                            mi.IsChecked = false;
+                    }
                 }
 
-                foreach (var item in ((MenuItem)menuItem.Parent).Items)
-                {
-                    if (item is MenuItem mi)
-                        mi.IsChecked = false;
-                }
+                _currentFontSize = size;
                 menuItem.IsChecked = true;
+                UpdateStatusBar();
             }
         }
         private void SetCustomFontSize_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Window
             {
-                Title = resources.Language.FontSize,
+                Title = string.IsNullOrEmpty(resources.Language.FontSize)
+                    ? "Размер шрифта"
+                    : resources.Language.FontSize,
                 Width = 300,
                 Height = 150,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -315,15 +390,41 @@ namespace WpfApp1
             };
 
             var panel = new StackPanel { Margin = new Thickness(10) };
-            panel.Children.Add(new TextBlock { Text = resources.Language.EnterSize, Margin = new Thickness(0, 0, 0, 5) });
+            panel.Children.Add(new TextBlock
+            {
+                Text = string.IsNullOrEmpty(resources.Language.EnterSize)
+                    ? "Введите размер (6-48):"
+                    : resources.Language.EnterSize,
+                Margin = new Thickness(0, 0, 0, 5)
+            });
 
             var textBox = new TextBox { Text = CurrentEditor?.FontSize.ToString() ?? "12" };
             textBox.SelectAll();
             panel.Children.Add(textBox);
 
-            var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 10, 0, 0) };
-            var okBtn = new Button { Content = resources.Language.OK, Width = 60, Height = 22, Margin = new Thickness(0, 0, 5, 0), IsDefault = true };
-            var cancelBtn = new Button { Content = resources.Language.Cancel, Width = 60, Height = 22, IsCancel = true };
+            var btnPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 10, 0, 0)
+            };
+
+            var okBtn = new Button
+            {
+                Content = resources.Language.OK ?? "OK",
+                Width = 60,
+                Height = 22,
+                Margin = new Thickness(0, 0, 5, 0),
+                IsDefault = true
+            };
+
+            var cancelBtn = new Button
+            {
+                Content = resources.Language.Cancel ?? "Отмена",
+                Width = 60,
+                Height = 22,
+                IsCancel = true
+            };
 
             btnPanel.Children.Add(okBtn);
             btnPanel.Children.Add(cancelBtn);
@@ -335,9 +436,13 @@ namespace WpfApp1
                 if (double.TryParse(textBox.Text, out double size))
                 {
                     size = Math.Max(6, Math.Min(48, size));
+
                     foreach (var tab in Tabs)
                         if (tab.Editor != null)
                             tab.Editor.FontSize = size;
+
+                    if (DataGrid1 != null)
+                        DataGrid1.FontSize = size;
 
                     if (mainMenu.Items[2] is MenuItem textMenu &&
                         textMenu.Items[7] is MenuItem fontSizeMenu)
@@ -351,11 +456,16 @@ namespace WpfApp1
                         }
                     }
 
+                    _currentFontSize = size;
+                    UpdateStatusBar();
+
                     dialog.Close();
                 }
                 else
                 {
-                    MessageBox.Show(resources.Language.ErrorInvalidNumber, resources.Language.FontSizeTitle,
+                    MessageBox.Show(
+                        resources.Language.ErrorInvalidNumber ?? "Введите число!",
+                        resources.Language.FontSize ?? "Ошибка",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     textBox.Focus();
                     textBox.SelectAll();
@@ -377,6 +487,7 @@ namespace WpfApp1
                 if (item is MenuItem mi && mi != sender)
                     mi.IsChecked = false;
             }
+            UpdateStatusBar();
         }
 
         private void SetEnglish_Click(object sender, RoutedEventArgs e)
@@ -392,6 +503,7 @@ namespace WpfApp1
                 if (item is MenuItem mi && mi != sender)
                     mi.IsChecked = false;
             }
+            UpdateStatusBar();
         }
         private void SetMongolian_Click(object sender, RoutedEventArgs e)
         {
@@ -406,6 +518,7 @@ namespace WpfApp1
                 if (item is MenuItem mi && mi != sender)
                     mi.IsChecked = false;
             }
+            UpdateStatusBar();
         }
         private void UpdateUI()
         {
@@ -544,6 +657,50 @@ namespace WpfApp1
             }
 
             return russianText;
+        }
+        private ICSharpCode.AvalonEdit.TextEditor GetCurrentEditor()
+        {
+            if (SelectedTab?.Editor != null)
+                return SelectedTab.Editor;
+
+            if (tabControl.SelectedContent is FrameworkElement content)
+            {
+                return FindVisualChild<ICSharpCode.AvalonEdit.TextEditor>(content);
+            }
+            return null;
+        }
+        private void UpdateStatusBar()
+        {
+            if (SelectedTab == null)
+            {
+                statusText.Text = resources.Language.StatusNoFile;
+                cursorPosition.Text = $"{resources.Language.StatusLine}: -  {resources.Language.StatusColumn}: -";
+                fileInfo.Text = $"{resources.Language.StatusChars}: 0  {resources.Language.StatusLines}: 0";
+                fontSizeStatus.Text = $"{resources.Language.StatusFontSize}: -";
+                return;
+            }
+
+            var doc = SelectedTab.Document;
+            int charCount = doc.TextLength;
+            int lineCount = doc.LineCount;
+            fileInfo.Text = $"{resources.Language.StatusChars}: {charCount}  {resources.Language.StatusLines}: {lineCount}";
+            statusText.Text = string.IsNullOrEmpty(SelectedTab.FilePath)
+                ? resources.Language.StatusNewDocument
+                : $"{resources.Language.StatusFile}: {Path.GetFileName(SelectedTab.FilePath)}";
+
+            var editor = GetCurrentEditor();
+            if (editor != null)
+            {
+                int line = editor.TextArea.Caret.Line;
+                int column = editor.TextArea.Caret.Column;
+                cursorPosition.Text = $"{resources.Language.StatusLine}: {line}  {resources.Language.StatusColumn}: {column}";
+                fontSizeStatus.Text = $"{resources.Language.StatusFontSize}: {editor.FontSize}pt";
+            }
+            else
+            {
+                cursorPosition.Text = $"{resources.Language.StatusLine}: 1  {resources.Language.StatusColumn}: 1";
+                fontSizeStatus.Text = $"{resources.Language.StatusFontSize}: {_currentFontSize}pt";
+            }
         }
     }
 }
