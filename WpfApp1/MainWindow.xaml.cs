@@ -25,7 +25,7 @@ namespace WpfApp1
             set
             {
                 _filePath = value;
-                OnPropertyChanged(nameof(FileName)); 
+                OnPropertyChanged(nameof(FileName));
             }
         }
 
@@ -76,12 +76,13 @@ namespace WpfApp1
         }
     }
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private static double _currentFontSize = 12;
 
         public ObservableCollection<EditorTab> Tabs { get; } = new ObservableCollection<EditorTab>();
         private Dictionary<MenuItem, string> _originalHeaders = new Dictionary<MenuItem, string>();
+        private HashSet<ICSharpCode.AvalonEdit.TextEditor> _subscribedEditors = new HashSet<ICSharpCode.AvalonEdit.TextEditor>();
 
         private EditorTab _selectedTab;
         public EditorTab SelectedTab
@@ -89,8 +90,29 @@ namespace WpfApp1
             get => _selectedTab;
             set
             {
+                if (_selectedTab == value) return;
+                var old = _selectedTab;
                 _selectedTab = value;
+                System.Diagnostics.Debug.WriteLine($"SelectedTab setter: old={(old == null ? "null" : old.FileName + "#" + old.GetHashCode())} -> new={(value == null ? "null" : value.FileName + "#" + value.GetHashCode())}");
+                OnPropertyChanged(nameof(SelectedTab));
+
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    UpdateStatusBar();
+                    try
+                    {
+                        var ed = GetCurrentEditor();
+                        ed?.Focus();
+                    }
+                    catch { }
+                }), DispatcherPriority.Background);
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public MainWindow()
@@ -113,6 +135,20 @@ namespace WpfApp1
                 DataGrid1.FontSize = _currentFontSize;
 
             UpdateStatusBar();
+
+            this.Loaded += (s, e) =>
+            {
+                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                {
+                    var editor = GetCurrentEditor();
+                    if (editor != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Window.Loaded: editor found for first tab");
+                        editor.Focus();
+                    }
+                    UpdateStatusBar();
+                }));
+            };
         }
         private void Window_PreviewDragOver(object sender, DragEventArgs e)
         {
@@ -144,13 +180,15 @@ namespace WpfApp1
                     if (tab.FilePath == filePath)
                     {
                         SelectedTab = tab;
-                        return; 
+                        System.Diagnostics.Debug.WriteLine($"OpenFileInNewTab: file already open, selecting tab '{tab.FileName}'");
+                        return;
                     }
                 }
 
                 var newTab = new EditorTab { FilePath = filePath };
                 newTab.Document.Text = File.ReadAllText(filePath);
                 Tabs.Add(newTab);
+                System.Diagnostics.Debug.WriteLine($"OpenFileInNewTab: added tab for '{newTab.FileName}', selecting it");
                 SelectedTab = newTab;
             }
             catch (Exception ex)
@@ -222,24 +260,21 @@ namespace WpfApp1
         private void new_file_Click(object sender, RoutedEventArgs e)
         {
             Tabs.Add(new EditorTab());
+            System.Diagnostics.Debug.WriteLine($"new_file_Click: added new tab, total tabs={Tabs.Count}");
             SelectedTab = Tabs[Tabs.Count - 1];
-            UpdateStatusBar(); 
+            UpdateStatusBar();
         }
 
         private void open_file_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog
-            {
-                Filter = "Text files(*.txt)|*.txt|C# files (*.cs)|*.cs|Xaml files (*.xaml)|*.xaml|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-
+            var ofd = new OpenFileDialog { };
             if (ofd.ShowDialog() == true)
             {
                 var newTab = new EditorTab { FilePath = ofd.FileName };
                 newTab.Document.Text = File.ReadAllText(ofd.FileName);
                 Tabs.Add(newTab);
                 SelectedTab = newTab;
+                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() => UpdateStatusBar()));
             }
         }
 
@@ -270,7 +305,7 @@ namespace WpfApp1
             {
                 File.WriteAllText(sfd.FileName, SelectedTab.Document.Text);
                 SelectedTab.FilePath = sfd.FileName;
-                UpdateStatusBar();   
+                UpdateStatusBar();
             }
         }
 
@@ -319,6 +354,13 @@ namespace WpfApp1
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine($"TabControl_SelectionChanged: SelectedTab={(SelectedTab == null ? "null" : SelectedTab.FileName + "#" + SelectedTab.GetHashCode())}");
+            var ed = GetCurrentEditor();
+            if (ed != null)
+            {
+                try { ed.Focus(); } catch { }
+                System.Diagnostics.Debug.WriteLine($"TabControl_SelectionChanged: focused editor={(ed == null ? "null" : ed.GetHashCode().ToString())}");
+            }
             UpdateStatusBar();
         }
 
@@ -328,10 +370,8 @@ namespace WpfApp1
             if (editor?.DataContext is EditorTab tab)
             {
                 tab.Editor = editor;
-                editor.FontSize = _currentFontSize;  
-                editor.TextArea.Caret.PositionChanged += (s, args) => UpdateStatusBar();
-                editor.Document.TextChanged += (s, args) => UpdateStatusBar();
-                UpdateStatusBar();                 
+                editor.FontSize = _currentFontSize;
+                UpdateStatusBar();
             }
         }
         private void about_Click(object sender, RoutedEventArgs e)
@@ -535,10 +575,10 @@ namespace WpfApp1
             if (DataGrid1 == null || DataGrid1.Columns.Count < 4)
                 return;
 
-            DataGrid1.Columns[0].Header = resources.Language.File;       
-            DataGrid1.Columns[1].Header = resources.Language.Position;  
-            DataGrid1.Columns[2].Header = resources.Language.Code;      
-            DataGrid1.Columns[3].Header = resources.Language.Error;     
+            DataGrid1.Columns[0].Header = resources.Language.File;
+            DataGrid1.Columns[1].Header = resources.Language.Position;
+            DataGrid1.Columns[2].Header = resources.Language.Code;
+            DataGrid1.Columns[3].Header = resources.Language.Error;
         }
         private void UpdateToolTips()
         {
@@ -552,7 +592,7 @@ namespace WpfApp1
             question.ToolTip = resources.Language.HelpContent;
             about.ToolTip = resources.Language.About;
         }
-        
+
         private void UpdateMenuItems(ItemsControl itemsControl)
         {
             foreach (var item in itemsControl.Items)
@@ -611,14 +651,14 @@ namespace WpfApp1
         {"Текст", "Text"},
         {"Пуск", "Start"},
         {"Справка", "Help"},
-        
+
         {"Новый файл", "New"},
         {"Создать", "New"},
         {"Открыть", "Open"},
         {"Сохранить", "Save"},
         {"Сохранить как", "SaveAs"},
         {"Выход", "Exit"},
-        
+
         {"Назад", "Undo"},
         {"Заново", "Redo"},
         {"Вырезать", "Cut"},
@@ -626,7 +666,7 @@ namespace WpfApp1
         {"Вставить", "Paste"},
         {"Удалить", "Delete"},
         {"Выделить всё", "SelectAll"},
-        
+
         {"Постановка задачи", "TaskStatement"},
         {"Грамматика", "Grammar"},
         {"Классификация грамматики", "GrammarClassification"},
@@ -637,14 +677,14 @@ namespace WpfApp1
         {"Размер шрифта", "FontSize"},
 
         {"Другой...", "Other"},
-        
+
         {"Вызов справки", "HelpContent"},
         {"О программе", "About"},
         {"Язык", "MenuLanguage"},
         {"Русский", "Russian"},
         {"English", "English"},
         {"Монгольский", "Mongolian"},
-        
+
         {"Позиция", "Position"},
         {"Код", "Code"},
         {"Ошибка", "Error"},
@@ -660,17 +700,53 @@ namespace WpfApp1
         }
         private ICSharpCode.AvalonEdit.TextEditor GetCurrentEditor()
         {
-            if (SelectedTab?.Editor != null)
-                return SelectedTab.Editor;
+            if (SelectedTab == null) return null;
 
-            if (tabControl.SelectedContent is FrameworkElement content)
+            if (SelectedTab.Editor != null && SelectedTab.Editor.DataContext == SelectedTab)
             {
-                return FindVisualChild<ICSharpCode.AvalonEdit.TextEditor>(content);
+                if (!_subscribedEditors.Contains(SelectedTab.Editor))
+                {
+                    SelectedTab.Editor.TextArea.Caret.PositionChanged += (s, e) => UpdateStatusBar();
+                    SelectedTab.Editor.Document.TextChanged += (s, e) => UpdateStatusBar();
+                    _subscribedEditors.Add(SelectedTab.Editor);
+                    System.Diagnostics.Debug.WriteLine($"GetCurrentEditor: subscribed to existing editor for {SelectedTab.FileName}");
+                }
+                return SelectedTab.Editor;
             }
+
+            ICSharpCode.AvalonEdit.TextEditor found = null;
+
+            var content = tabControl.SelectedContent;
+            if (content is ICSharpCode.AvalonEdit.TextEditor te)
+                found = te;
+            else if (content is FrameworkElement fe)
+                found = FindVisualChild<ICSharpCode.AvalonEdit.TextEditor>(fe);
+
+            if (found == null)
+                found = FindVisualChild<ICSharpCode.AvalonEdit.TextEditor>(this);
+
+            if (found != null && found.DataContext is EditorTab tab && tab == SelectedTab)
+            {
+                SelectedTab.Editor = found;
+                if (!_subscribedEditors.Contains(found))
+                {
+                    found.TextArea.Caret.PositionChanged += (s, e) => UpdateStatusBar();
+                    found.Document.TextChanged += (s, e) => UpdateStatusBar();
+                    _subscribedEditors.Add(found);
+                    System.Diagnostics.Debug.WriteLine($"Subscribed to editor events for tab '{tab.FileName}'");
+                }
+                return found;
+            }
+
             return null;
         }
         private void UpdateStatusBar()
         {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"UpdateStatusBar: SelectedTab={(SelectedTab == null ? "null" : SelectedTab.FileName + "#" + SelectedTab.GetHashCode())}");
+            }
+            catch { }
             if (SelectedTab == null)
             {
                 statusText.Text = resources.Language.StatusNoFile;
@@ -689,6 +765,11 @@ namespace WpfApp1
                 : $"{resources.Language.StatusFile}: {Path.GetFileName(SelectedTab.FilePath)}";
 
             var editor = GetCurrentEditor();
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"UpdateStatusBar: SelectedTab.Editor={(SelectedTab.Editor == null ? "null" : SelectedTab.Editor.GetHashCode().ToString())}; GetCurrentEditor={(editor == null ? "null" : editor.GetHashCode().ToString())}");
+            }
+            catch { }
             if (editor != null)
             {
                 int line = editor.TextArea.Caret.Line;
