@@ -783,5 +783,33 @@ namespace WpfApp1
                 fontSizeStatus.Text = $"{resources.Language.StatusFontSize}: {_currentFontSize}pt";
             }
         }
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.N && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                new_file_Click(sender, e);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                open_file_Click(sender, e);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                save_file_Click(sender, e);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.S && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                save_as_file_Click(sender, e);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Q && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                exitApp_Click(sender, e);
+                e.Handled = true;
+            }
+        }
     }
 }

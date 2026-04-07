@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Title="GUI для языкового процессора" Height="381" Width="598"
         AllowDrop="True"
+        PreviewKeyDown="Window_PreviewKeyDown"
         PreviewDragOver="Window_PreviewDragOver"
         Drop="Window_Drop">
     <Grid>
@@ -26,11 +27,11 @@
 
         <Menu Name="mainMenu" Height="20" VerticalAlignment="Center" Grid.ColumnSpan="3">
             <MenuItem Header="Файл">
-                <MenuItem Header="Создать" Click="new_file_Click"/>
-                <MenuItem Header="Открыть" Click="open_file_Click"/>
-                <MenuItem Header="Сохранить" Click="save_file_Click"/>
-                <MenuItem Header="Сохранить как" Click="save_as_file_Click"/>
-                <MenuItem Header="Выход" Click="exitApp_Click"/>
+                <MenuItem Header="Создать" Click="new_file_Click" InputGestureText="Ctrl+N"/>
+                <MenuItem Header="Открыть" Click="open_file_Click" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="Сохранить" Click="save_file_Click" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="Сохранить как" Click="save_as_file_Click" InputGestureText="Ctrl+Shift+S"/>
+                <MenuItem Header="Выход" Click="exitApp_Click" InputGestureText="Ctrl+Q"/>
             </MenuItem>
             <MenuItem Header="Правка">
                 <MenuItem Header="Назад" Click="back_Click"/>
@@ -143,7 +144,7 @@
         <DataGrid x:Name="DataGrid1" Grid.Row="3" Grid.ColumnSpan="3" 
                   AutoGenerateColumns="False" HorizontalGridLinesBrush="DarkGray"
                   RowBackground="LightGray" AlternatingRowBackground="White" 
-                  Height="150" VerticalAlignment="Center">
+                  Height="97" VerticalAlignment="Center">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Файл" Binding="{Binding Path=Title}" Width="*"/>
                 <DataGridHyperlinkColumn Header="Позиция" Binding="{Binding Path=Company}" Width="*"/>
